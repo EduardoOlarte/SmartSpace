@@ -1,5 +1,4 @@
 // backend/src/controllers/authController.js
-import bcrypt from "bcrypt";
 import { getUserByNombre } from "../models/userModel.js";
 import * as ControllerModel from "../models/controllerModel.js";
 
