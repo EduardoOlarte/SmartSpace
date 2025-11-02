@@ -1,0 +1,20 @@
+DROP TABLE IF EXISTS usuarios CASCADE;
+
+
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    rol VARCHAR(20) NOT NULL CHECK (rol IN ('administrador', 'operador')),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+INSERT INTO usuarios (id, nombre, email, password, rol, fecha_creacion, activo)
+VALUES
+  (1, 'Juan', 'juan@example.com', '$2b$10$4N1KirAtVECBJ5aagjsmBe7aV2zNaCfFpuVqoVVU1mfI.ycfJV5t2', 'operador', '2025-09-29 15:14:04.493413', true),
+  (2, 'María', 'maria@example.com', '$2b$10$OLq5M2GqqQnAXtD98I90a.P.2l7axMUKxuqCwsRXmrL9JVBioYRWe', 'operador', '2025-09-29 15:14:04.493413', true),
+  (3, 'Carlos Ruiz', 'carlos@example.com', '$2b$10$CHuaOvBvaP1h0hPDpv8iQO5Eu3/qQ54Cgv9wHQwrPlnlAaqIa20VK', 'operador', '2025-09-29 15:14:04.493413', true),
+  (6, 'Admin', 'admin@gmail.com', '$2b$10$pHFZ4Jz1UHPgaiG/7vPkD.ks7kPAAAdbXcmDvm8acOw97TqTp.WC6', 'administrador', '2025-09-29 18:42:06.670519', true),
+  (7, '01', '1@gmail.com', '$2b$10$5W7CYDVFQ6zYTkOOBolk9OxGjktR2BFlWSPClrnG1/P.YRFGtvc7G', 'operador', '2025-09-29 20:03:27.178291', true);

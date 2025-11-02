@@ -1,0 +1,135 @@
+--//crear base de datos
+
+
+DROP DATABASE IF EXISTS parqueadero;
+
+CREATE DATABASE parqueadero
+
+
+----USUARIOS
+
+DROP TABLE IF EXISTS usuarios CASCADE;
+
+
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    rol VARCHAR(20) NOT NULL CHECK (rol IN ('administrador', 'operador')),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+INSERT INTO usuarios (id, nombre, email, password, rol, fecha_creacion, activo)
+VALUES
+  (1, 'Juan', 'juan@example.com', '$2b$10$4N1KirAtVECBJ5aagjsmBe7aV2zNaCfFpuVqoVVU1mfI.ycfJV5t2', 'operador', '2025-09-29 15:14:04.493413', true),
+  (2, 'María', 'maria@example.com', '$2b$10$OLq5M2GqqQnAXtD98I90a.P.2l7axMUKxuqCwsRXmrL9JVBioYRWe', 'operador', '2025-09-29 15:14:04.493413', true),
+  (3, 'Carlos Ruiz', 'carlos@example.com', '$2b$10$CHuaOvBvaP1h0hPDpv8iQO5Eu3/qQ54Cgv9wHQwrPlnlAaqIa20VK', 'operador', '2025-09-29 15:14:04.493413', true),
+  (6, 'Admin', 'admin@gmail.com', '$2b$10$pHFZ4Jz1UHPgaiG/7vPkD.ks7kPAAAdbXcmDvm8acOw97TqTp.WC6', 'administrador', '2025-09-29 18:42:06.670519', true),
+  (7, '01', '1@gmail.com', '$2b$10$5W7CYDVFQ6zYTkOOBolk9OxGjktR2BFlWSPClrnG1/P.YRFGtvc7G', 'operador', '2025-09-29 20:03:27.178291', true);
+
+
+-- ==========================
+-- TABLA: controladores
+-- ==========================
+DROP TABLE IF EXISTS controladores CASCADE;
+
+CREATE TABLE controladores (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  identificacion VARCHAR(100) UNIQUE NOT NULL,
+  telefono VARCHAR(20),
+  rol VARCHAR(50) NOT NULL DEFAULT 'operativo',
+  activo BOOLEAN DEFAULT true,
+  password VARCHAR(255) -- para login directo de controladores si lo usas
+);
+
+-- Insertar dos controladores iniciales
+INSERT INTO controladores (nombre, identificacion, telefono, rol, activo, password)
+VALUES 
+('Administrador General', '01', '3100000000', 'admin', true, '1234'),
+('Controlador Operativo', '02', '3200000000', 'operativo', true, '1234');
+
+---  PARQUEADEROS
+-- ==========================
+-- TABLA: parqueaderos
+-- ==========================
+
+DROP TABLE IF EXISTS parqueaderos CASCADE;
+
+CREATE TABLE parqueaderos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    capacidad INTEGER NOT NULL,
+    ubicacion VARCHAR(150) NOT NULL,
+    ciudad VARCHAR(100) NOT NULL,
+    dias_operacion VARCHAR(100) NOT NULL -- ej: 'Lunes-Viernes'
+);
+
+-- Ejemplo de inserción
+INSERT INTO parqueaderos (nombre, capacidad, ubicacion, ciudad, dias_operacion)
+VALUES
+('Parqueadero Central', 50, 'Calle 123 #45-67', 'Bogotá', 'Lunes-Domingo'),
+('Parqueadero Norte', 30, 'Av. Norte #12-34', 'Bogotá', 'Lunes-Sábado'),
+('Parqueadero Sur', 40, 'Carrera 10 #78-90', 'Bogotá', 'Lunes-Viernes');
+
+
+-- ==========================
+-- TABLA: horarios
+-- ==========================
+
+DROP TABLE IF EXISTS horarios CASCADE;
+
+CREATE TABLE horarios (
+    id SERIAL PRIMARY KEY,
+    parqueadero_id INTEGER NOT NULL REFERENCES parqueaderos(id) ON DELETE CASCADE,
+    dia_semana VARCHAR(15) NOT NULL CHECK (
+        dia_semana IN ('Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo')
+    ),
+    hora_apertura TIME NOT NULL,
+    hora_cierre TIME NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ejemplo de inserción
+INSERT INTO horarios (parqueadero_id, dia_semana, hora_apertura, hora_cierre)
+VALUES
+(1, 'Lunes', '07:00', '21:00'),
+(1, 'Martes', '07:00', '21:00'),
+(1, 'Miércoles', '07:00', '21:00'),
+(1, 'Jueves', '07:00', '21:00'),
+(1, 'Viernes', '07:00', '21:00'),
+(1, 'Sábado', '07:00', '21:00'),
+(1, 'Domingo', '07:00', '21:00');
+
+-- ==========================
+-- TABLA: entradas
+-- ==========================
+DROP TABLE IF EXISTS entradas CASCADE;
+
+CREATE TABLE entradas (
+    id SERIAL PRIMARY KEY,
+    placa VARCHAR(20) NOT NULL,
+    tipo_vehiculo VARCHAR(50) NOT NULL CHECK (
+        tipo_vehiculo IN ('automovil','moto','camion','otros')
+    ),
+    parqueadero_id INTEGER NOT NULL REFERENCES parqueaderos(id) ON DELETE CASCADE,
+    controlador_id INTEGER NOT NULL REFERENCES controladores(id) ON DELETE CASCADE,
+    espacio_asignado INTEGER NOT NULL,
+    hora_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    hora_salida TIMESTAMP,
+    estado VARCHAR(20) NOT NULL DEFAULT 'activa' CHECK (estado IN ('activa','cerrada'))
+);
+
+-- ==========================
+-- REGISTROS DE PRUEBA
+-- ==========================
+INSERT INTO entradas (placa, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado)
+VALUES
+('ABC123', 'automovil', 1, 1, 12),
+('XYZ789', 'moto', 1, 2, 3),
+('LMN456', 'camion', 1, 1, 1);
+

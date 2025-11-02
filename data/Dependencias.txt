@@ -1,0 +1,13 @@
+cd C:\ruta\a\SmartSpace  
+
+En la carpeta backend
+en una terminal ejecutar:
+npm install express pg cors dotenv
+
+# carpeta raíz del proyecto (contiene backend/)
+npm create vite@latest frontend -- --template react
+cd frontend
+npm install
+
+dentro de frontend
+npm install axios

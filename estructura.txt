@@ -1,0 +1,108 @@
+Listado de rutas de carpetas
+El n£mero de serie del volumen es C63E-EF72
+C:.
+|   estructura.txt
+|   README.md
+|   Setup.bat
+|   
++---.vscode
+|       extensions.json
+|       
++---backend
+|   |   .env
+|   |   package-lock.json
+|   |   package.json
+|   |   
+|   \---src
+|       |   app.js
+|       |   server.js
+|       |   
+|       +---config
+|       |       db.js
+|       |       
+|       +---controllers
+|       |       authcontroller.js
+|       |       controllerController.js
+|       |       entradaController.js
+|       |       horarioController.js
+|       |       parqueaderoController.js
+|       |       userController.js
+|       |       
+|       +---middlewares
+|       |       auth.js
+|       |       
+|       +---models
+|       |       controllerModel.js
+|       |       entradasModel.js
+|       |       horarioModel.js
+|       |       parqueaderoModel.js
+|       |       userModel.js
+|       |       
+|       \---routes
+|               authRoutes.js
+|               controllerRoutes.js
+|               entradasRoutes.js
+|               horarioRoutes.js
+|               parqueaderoRoutes.js
+|               userRoutes.js
+|               
++---data
+|       Consultas.txt
+|       Dependencias.txt
+|       isotipo.png
+|       Parqueaderos.txt
+|       Usuarios.txt
+|       
+\---frontend
+    |   .env
+    |   index.html
+    |   package-lock.json
+    |   package.json
+    |   vite.config.js
+    |   
+    \---src
+        |   App.jsx
+        |   index.css
+        |   main.jsx
+        |   
+        +---components
+        |       ControllerList.jsx
+        |       ControllerModal.jsx
+        |       EntradaList.jsx
+        |       EntradaModal.jsx
+        |       HorarioList.jsx
+        |       HorarioModal.jsx
+        |       Navbar.jsx
+        |       ParqueaderoList.jsx
+        |       ParqueaderoModal.jsx
+        |       UserList.jsx
+        |       UserModal.jsx
+        |       
+        +---hooks
+        |       useControllers.js
+        |       useEntradas.js
+        |       useHorarios.js
+        |       useParqueaderos.js
+        |       useUsers.js
+        |       
+        +---pages
+        |       ControllersPage.jsx
+        |       EntradasPage.jsx
+        |       HorariosPage.jsx
+        |       LoginPage.jsx
+        |       ParqueaderosPage.jsx
+        |       UsersPage.jsx
+        |       
+        +---services
+        |       api.js
+        |       authService.js
+        |       controllerService.js
+        |       entradaService.js
+        |       horarioService.js
+        |       parqueaderoService.js
+        |       userService.js
+        |       
+        \---styles
+                App.css
+                global.css
+                

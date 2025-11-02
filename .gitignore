@@ -1,0 +1,7 @@
+# Archivos y carpetas que no deben subirse a GitHub
+node_modules/
+.env
+dist/
+.vscode/
+*.log
+.DS_Store

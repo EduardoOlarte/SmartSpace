@@ -1,0 +1,21 @@
+-- 1. Eliminar la tabla si existe
+DROP TABLE IF EXISTS parqueaderos;
+
+-- 2. Crear la tabla
+CREATE TABLE parqueaderos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    capacidad INTEGER NOT NULL,
+    ubicacion VARCHAR(150) NOT NULL,
+    ciudad VARCHAR(100) NOT NULL,
+    horario_apertura TIME NOT NULL,
+    horario_cierre TIME NOT NULL,
+    dias_operacion VARCHAR(100) NOT NULL -- ej: 'Lunes-Viernes'
+);
+
+-- 3. Insertar registros de ejemplo
+INSERT INTO parqueaderos (nombre, capacidad, ubicacion, ciudad, horario_apertura, horario_cierre, dias_operacion)
+VALUES
+('Parqueadero Central', 50, 'Calle 123 #45-67', 'Bogotá', '07:00', '22:00', 'Lunes-Domingo'),
+('Parqueadero Norte', 30, 'Av. Norte #12-34', 'Bogotá', '06:30', '21:30', 'Lunes-Sábado'),
+('Parqueadero Sur', 40, 'Carrera 10 #78-90', 'Bogotá', '08:00', '20:00', 'Lunes-Viernes');
