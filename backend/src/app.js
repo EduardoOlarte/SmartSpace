@@ -5,9 +5,9 @@ import cors from "cors";
 import controllerRoutes from "./routes/controllerRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import parqueaderoRoutes from "./routes/parqueaderoRoutes.js";
-import horarioRoutes from "./routes/horarioRoutes.js"; // ✅ Nueva ruta de horarios
+import horarioRoutes from "./routes/horarioRoutes.js";
 import entradasRoutes from "./routes/entradasRoutes.js";
-import authRoutes from "./routes/authRoutes.js"; // ✅ Ruta de login
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
@@ -19,8 +19,13 @@ app.use(express.json());
 app.use("/api/controllers", controllerRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/parqueaderos", parqueaderoRoutes);
-app.use("/api/horarios", horarioRoutes); // ✅ Montar ruta de horarios
-app.use("/api/auth", authRoutes); // ✅ Montar ruta de login
+app.use("/api/horarios", horarioRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/entradas", entradasRoutes);
+
+// ✅ Ruta raíz para probar en Render
+app.get("/", (req, res) => {
+  res.send("🚀 Backend del Parqueadero corriendo correctamente en Render!");
+});
 
 export default app;
