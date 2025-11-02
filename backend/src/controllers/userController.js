@@ -1,6 +1,7 @@
 // backend/src/controllers/userController.js
 import * as UserModel from "../models/userModel.js";
 
+
 // Obtener todos los usuarios
 export const obtenerUsuarios = async (req, res) => {
   try {

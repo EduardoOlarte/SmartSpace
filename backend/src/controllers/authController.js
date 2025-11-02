@@ -1,7 +1,8 @@
 // backend/src/controllers/authController.js
 import { getUserByNombre } from "../models/userModel.js";
 import * as ControllerModel from "../models/controllerModel.js";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcryptjs';
+
 
 // 🔹 Login de usuarios (admin u operador)
 export const loginUser = async (req, res) => {

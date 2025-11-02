@@ -1,6 +1,7 @@
 // backend/src/models/userModel.js
 import pool from "../config/db.js";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcryptjs';
+
 
 const SALT_ROUNDS = 10;
 
