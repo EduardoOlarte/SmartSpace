@@ -68,9 +68,10 @@ export const useEntradas = (initialSearch = null) => {
       const result = await entradaService.updateEntrada(id, data);
 
       window.alert(result.success ? `✅ ${result.message}` : ` ${result.message}`);
-loadEntradas();
+
       if (result.success) {
         setEntradas((prev) => prev.map((e) => (e.id === id ? result.data : e)));
+        loadEntradas();
         return { success: true, message: result.message };
         
       }

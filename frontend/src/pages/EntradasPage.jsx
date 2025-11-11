@@ -47,6 +47,7 @@ export default function EntradasPage() {
 
       if (result.message) {
         showAlert(result.success ? "success" : "error", result.message);
+        loadEntradas();
       }
 
       if (result.success) {

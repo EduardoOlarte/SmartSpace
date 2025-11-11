@@ -65,6 +65,7 @@ export default function EntradaList({ entradas = [], onSalida }) {
   const handleCloseModal = () => {
     setModalOpen(false);
     setEntradaSeleccionada(null);
+    irAEntradas();
   };
 
   const handleSubmitModal = async (data, entradaOriginal) => {
@@ -215,7 +216,7 @@ export default function EntradaList({ entradas = [], onSalida }) {
                         onClick={() => {
                           if (window.confirm(`¿Eliminar entrada "${e.placa}"?`))
                             deleteEntrada(e.id);
-                          
+                          irAEntradas();
                         }}
                         onMouseEnter={() => setHoverDeleteId(e.id)}
                         onMouseLeave={() => setHoverDeleteId(null)}
