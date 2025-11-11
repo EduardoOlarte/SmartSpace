@@ -12,7 +12,7 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  if (!user) return null; // No mostrar navbar si no hay usuario
+  if (!user) return null;
 
   return (
     <nav className="navbar" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -29,7 +29,7 @@ const Navbar = () => {
           </li>
         )}
 
-        {/* Controladores, Parqueaderos, Horarios y Entradas - admin u operador */}
+        {/* Controladores, Parqueaderos, Horarios, Tarifas y Entradas - admin u operador */}
         {(user.rol === "administrador" || user.rol === "operador") && (
           <>
             <li>
@@ -54,6 +54,15 @@ const Navbar = () => {
                 className={({ isActive }) => isActive ? 'btn btn-primary active' : 'btn btn-primary'}
               >
                 <i className="fas fa-clock"></i> Horarios
+              </NavLink>
+            </li>
+            {/* 🔹 NUEVO: Tarifas */}
+            <li>
+              <NavLink
+                to="/tarifas"
+                className={({ isActive }) => isActive ? 'btn btn-primary active' : 'btn btn-primary'}
+              >
+                <i className="fas fa-dollar-sign"></i> Tarifas
               </NavLink>
             </li>
             <li>

@@ -5,6 +5,7 @@ import ControllersPage from "./pages/ControllersPage";
 import ParkingsPage from "./pages/ParqueaderosPage";
 import HorariosPage from "./pages/HorariosPage";
 import EntradasPage from "./pages/EntradasPage";
+import TarifasPage from "./pages/TarifasPage"; 
 import LoginPage from "./pages/LoginPage";
 import { authService } from "./services/authService";
 
@@ -50,6 +51,12 @@ function AppLayout() {
           <Route
             path="/horarios"
             element={<ProtectedRoute roles={["administrador", "operador"]} element={<HorariosPage />} />}
+          />
+
+          {/* 🔹 NUEVO: Tarifas */}
+          <Route
+            path="/tarifas"
+            element={<ProtectedRoute roles={["administrador", "operador"]} element={<TarifasPage />} />}
           />
 
           {/* Entradas */}

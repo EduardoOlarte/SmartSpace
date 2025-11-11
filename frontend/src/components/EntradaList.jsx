@@ -1,3 +1,4 @@
+// frontend/src/components/EntradaList.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
@@ -19,9 +20,10 @@ export default function EntradaList({ entradas = [], onSalida }) {
 
   const navigate = useNavigate();
   const user = authService.getCurrentUser();
+
   const irAEntradas = () => {
-        window.location.href = "/entradas";
-    };
+    navigate("/entradas");
+  };
 
   // =======================
   // Cargar parqueaderos y controladores
@@ -97,6 +99,7 @@ export default function EntradaList({ entradas = [], onSalida }) {
             <th style={thStyle}>Espacio</th>
             <th style={thStyle}>Entrada</th>
             <th style={thStyle}>Salida</th>
+            <th style={thStyle}>Monto</th> {/* 🔹 NUEVO */}
             <th style={thStyle}>Activo</th>
             <th style={thStyle}>Acciones</th>
           </tr>
@@ -104,7 +107,7 @@ export default function EntradaList({ entradas = [], onSalida }) {
         <tbody>
           {entradas.length === 0 ? (
             <tr>
-              <td colSpan={10} style={{ textAlign: "center", padding: 20 }}>
+              <td colSpan={11} style={{ textAlign: "center", padding: 20 }}>
                 No hay entradas registradas aún.
               </td>
             </tr>
@@ -114,8 +117,8 @@ export default function EntradaList({ entradas = [], onSalida }) {
                 e.tipo_vehiculo === "moto"
                   ? "#f59e0b"
                   : e.tipo_vehiculo === "camion"
-                  ? "#dc2626"
-                  : "#16a34a";
+                    ? "#dc2626"
+                    : "#16a34a";
               const activo = !e.hora_salida;
 
               return (
@@ -152,6 +155,18 @@ export default function EntradaList({ entradas = [], onSalida }) {
                   <td style={tdStyle}>{e.espacio_asignado}</td>
                   <td style={tdStyle}>{formatDateTime(e.hora_ingreso)}</td>
                   <td style={tdStyle}>{formatDateTime(e.hora_salida)}</td>
+
+                  {/* 🔹 NUEVO: Mostrar monto cobrado */}
+                  <td style={tdStyle}>
+                    {e.monto_cobrado > 0 ? (
+                      <strong style={{ color: "#059669", fontSize: "14px" }}>
+                        ${new Intl.NumberFormat("es-CO").format(e.monto_cobrado)}
+                      </strong>
+                    ) : (
+                      <span style={{ color: "#9ca3af", fontSize: "13px" }}>-</span>
+                    )}
+                  </td>
+
                   <td style={tdStyle}>
                     <span
                       style={{
@@ -162,11 +177,13 @@ export default function EntradaList({ entradas = [], onSalida }) {
                       {activo ? "Sí" : "No"}
                     </span>
                   </td>
+
                   <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
                     {activo && (
                       <button
                         onClick={() =>
                           onSalida ? onSalida(e.id) : registrarSalida(e.id)
+                          
                         }
                         onMouseEnter={() => setHoverSalidaId(e.id)}
                         onMouseLeave={() => setHoverSalidaId(null)}
@@ -196,11 +213,9 @@ export default function EntradaList({ entradas = [], onSalida }) {
                     {(user?.rol === "administrador" || user?.rol === "operador") && (
                       <button
                         onClick={() => {
-                          if (
-                            window.confirm(`¿Eliminar entrada "${e.placa}"?`)
-                          )
+                          if (window.confirm(`¿Eliminar entrada "${e.placa}"?`))
                             deleteEntrada(e.id);
-                            irAEntradas();
+                          
                         }}
                         onMouseEnter={() => setHoverDeleteId(e.id)}
                         onMouseLeave={() => setHoverDeleteId(null)}

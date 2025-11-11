@@ -1,0 +1,55 @@
+-- ==========================
+-- TABLA: tarifas
+-- ==========================
+DROP TABLE IF EXISTS tarifas CASCADE;
+
+CREATE TABLE tarifas (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    tipo_calculo VARCHAR(50) NOT NULL CHECK (
+        tipo_calculo IN ('por_hora', 'por_dia', 'fijo', 'por_minuto')
+    ),
+    tipo_vehiculo VARCHAR(50) CHECK (
+        tipo_vehiculo IN ('automovil', 'moto', 'camion', 'todos')
+    ),
+    parqueadero_id INTEGER REFERENCES parqueaderos(id) ON DELETE CASCADE,
+    dia_semana VARCHAR(15) CHECK (
+        dia_semana IN ('Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo','Todos')
+    ),
+    hora_inicio TIME,
+    hora_fin TIME,
+    precio DECIMAL(10,2) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índices para búsquedas rápidas
+CREATE INDEX idx_tarifas_parqueadero ON tarifas(parqueadero_id);
+CREATE INDEX idx_tarifas_tipo_vehiculo ON tarifas(tipo_vehiculo);
+CREATE INDEX idx_tarifas_activo ON tarifas(activo);
+
+-- Ejemplos de tarifas
+INSERT INTO tarifas (nombre, descripcion, tipo_calculo, tipo_vehiculo, parqueadero_id, dia_semana, hora_inicio, hora_fin, precio)
+VALUES
+-- Tarifas por hora para todos los vehículos
+('Tarifa Hora - Automóvil', 'Tarifa por hora para automóviles', 'por_hora', 'automovil', NULL, 'Todos', NULL, NULL, 3000.00),
+('Tarifa Hora - Moto', 'Tarifa por hora para motos', 'por_hora', 'moto', NULL, 'Todos', NULL, NULL, 2000.00),
+('Tarifa Hora - Camión', 'Tarifa por hora para camiones', 'por_hora', 'camion', NULL, 'Todos', NULL, NULL, 5000.00),
+
+-- Tarifas por día completo
+('Tarifa Día - Automóvil', 'Tarifa día completo para automóviles', 'por_dia', 'automovil', NULL, 'Todos', NULL, NULL, 20000.00),
+('Tarifa Día - Moto', 'Tarifa día completo para motos', 'por_dia', 'moto', NULL, 'Todos', NULL, NULL, 12000.00),
+
+-- Tarifas especiales por parqueadero
+('Tarifa Premium - Central', 'Tarifa especial parqueadero central', 'por_hora', 'automovil', 1, 'Todos', NULL, NULL, 4000.00),
+
+-- Tarifas por horario (nocturno)
+('Tarifa Nocturna', 'Tarifa especial horario nocturno', 'por_hora', 'todos', NULL, 'Todos', '22:00', '06:00', 2500.00),
+
+-- Tarifas de fin de semana
+('Tarifa Fin de Semana', 'Tarifa especial sábados y domingos', 'por_hora', 'automovil', NULL, 'Sábado', NULL, NULL, 3500.00);
+
+-- Agregar columna para almacenar el monto cobrado
+ALTER TABLE entradas ADD COLUMN IF NOT EXISTS monto_cobrado DECIMAL(10,2) DEFAULT 0;

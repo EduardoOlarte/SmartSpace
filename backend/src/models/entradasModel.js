@@ -88,7 +88,8 @@ export const updateEntrada = async (id, {
   controlador_id,
   espacio_asignado,
   hora_salida,
-  estado
+  estado,
+  monto_cobrado  // 🔹 NUEVO CAMPO
 }) => {
   const placaNormalized = placa ? placa.trim().toUpperCase() : null;
 
@@ -126,7 +127,16 @@ export const updateEntrada = async (id, {
   }
 
   // Preparar campos a actualizar
-  const allowedFields = { placa: placaNormalized, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado, hora_salida, estado };
+  const allowedFields = { 
+    placa: placaNormalized, 
+    tipo_vehiculo, 
+    parqueadero_id, 
+    controlador_id, 
+    espacio_asignado, 
+    hora_salida, 
+    estado,
+    monto_cobrado  // 🔹 NUEVO CAMPO
+  };
   const updates = Object.entries(allowedFields).filter(([_, value]) => value !== undefined);
 
   if (updates.length === 0) return null;

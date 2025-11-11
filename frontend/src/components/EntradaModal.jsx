@@ -17,7 +17,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
     const isEditing = !!entrada;
 
     const irAEntradas = () => {
-        window.location.href = "/entradas";
+        navigate("/entradas");
     };
 
     // Cargar parqueaderos al abrir modal
@@ -124,8 +124,9 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                         placa: "",
                         tipo_vehiculo: "automovil",
                         parqueadero_id: parqueaderos[0]?.id.toString() || "",
-                        espacio_asignado: ""
+                        espacio_asignado: "",
                     }));
+                    irAEntradas();
                 }
 
             } else {
@@ -239,6 +240,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                             {isSubmitting ? "Guardando..." : isEditing ? "Actualizar" : "Registrar"}
                         </button>
                     </div>
+
                 </form>
             </div>
         </div>

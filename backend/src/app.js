@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import parqueaderoRoutes from "./routes/parqueaderoRoutes.js";
 import horarioRoutes from "./routes/horarioRoutes.js";
 import entradasRoutes from "./routes/entradasRoutes.js";
+import tarifasRoutes from "./routes/tarifaRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
@@ -22,10 +23,11 @@ app.use("/api/parqueaderos", parqueaderoRoutes);
 app.use("/api/horarios", horarioRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/entradas", entradasRoutes);
+app.use("/api/tarifas", tarifasRoutes); 
 
-// ✅ Ruta raíz para probar en Render
+// ✅ Ruta raíz para Render
 app.get("/", (req, res) => {
-  res.send("🚀 Backend del Parqueadero corriendo correctamente en Render!");
+  res.send(" Backend del Parqueadero corriendo correctamente en Render!");
 });
 
 export default app;
