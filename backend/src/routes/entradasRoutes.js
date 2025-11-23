@@ -11,12 +11,15 @@ import {
 
 const router = Router();
 
+// 🔹 IMPORTANTE: Rutas específicas ANTES de rutas genéricas
+router.put("/salida/:id", registrarSalida);  // Específica - procesar primero
 router.get("/buscar/:criterio/:valor", buscarEntradas);
+
+// Rutas genéricas al final
 router.get("/", obtenerEntradas);
 router.get("/:id", obtenerEntrada);
 router.post("/", crearEntrada);
 router.put("/:id", actualizarEntrada);
-router.put("/salida/:id", registrarSalida);  
 router.delete("/:id", eliminarEntrada);
 
 export default router;

@@ -35,9 +35,18 @@ export const createEntrada = async ({
   tipo_vehiculo,
   parqueadero_id,
   controlador_id,
-  espacio_asignado
+  espacio_asignado,
+  tipo_cobro = 'por_hora'
 }) => {
   const placaNormalized = placa.trim().toUpperCase();
+
+  if (!["moto", "automovil", "camion"].includes(tipo_vehiculo)) {
+    throw new Error("Tipo de vehículo debe ser 'moto', 'automovil' o 'camion'");
+  }
+
+  if (!["por_dia", "por_hora"].includes(tipo_cobro)) {
+    throw new Error("Tipo de cobro debe ser 'por_dia' o 'por_hora'");
+  }
 
   // 1. Validar duplicidad de placa
   const { rows: placaExistente } = await pool.query(
@@ -69,12 +78,12 @@ export const createEntrada = async ({
     throw new Error(`El espacio asignado (${espacio_asignado}) supera la capacidad del parqueadero (${parqueadero[0].capacidad})`);
   }
 
-  // Insertar entrada
+  // Insertar entrada con tipo_cobro
   const { rows } = await pool.query(
     `INSERT INTO entradas 
-      (placa, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado, estado)
-     VALUES ($1,$2,$3,$4,$5,'activa') RETURNING *`,
-    [placaNormalized, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado]
+      (placa, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado, tipo_cobro, estado)
+     VALUES ($1,$2,$3,$4,$5,$6,'activa') RETURNING *`,
+    [placaNormalized, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado, tipo_cobro]
   );
 
   return rows[0];
@@ -89,7 +98,8 @@ export const updateEntrada = async (id, {
   espacio_asignado,
   hora_salida,
   estado,
-  monto_cobrado  // 🔹 NUEVO CAMPO
+  monto_cobrado,
+  tipo_cobro
 }) => {
   const placaNormalized = placa ? placa.trim().toUpperCase() : null;
 
@@ -135,7 +145,8 @@ export const updateEntrada = async (id, {
     espacio_asignado, 
     hora_salida, 
     estado,
-    monto_cobrado  // 🔹 NUEVO CAMPO
+    monto_cobrado,
+    tipo_cobro
   };
   const updates = Object.entries(allowedFields).filter(([_, value]) => value !== undefined);
 

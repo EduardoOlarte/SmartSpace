@@ -6,7 +6,7 @@ const TarifaModal = ({ isOpen, onClose, tarifa, onSubmit }) => {
     nombre: "",
     descripcion: "",
     tipo_calculo: "por_hora",
-    tipo_vehiculo: "todos",
+    tipo_vehiculo: "moto",
     parqueadero_id: "",
     dia_semana: "Todos",
     hora_inicio: "",
@@ -41,7 +41,7 @@ const TarifaModal = ({ isOpen, onClose, tarifa, onSubmit }) => {
         nombre: tarifa.nombre || "",
         descripcion: tarifa.descripcion || "",
         tipo_calculo: tarifa.tipo_calculo || "por_hora",
-        tipo_vehiculo: tarifa.tipo_vehiculo || "todos",
+        tipo_vehiculo: tarifa.tipo_vehiculo || "moto",
         parqueadero_id: tarifa.parqueadero_id?.toString() || "",
         dia_semana: tarifa.dia_semana || "Todos",
         hora_inicio: tarifa.hora_inicio?.slice(0, 5) || "",
@@ -54,7 +54,7 @@ const TarifaModal = ({ isOpen, onClose, tarifa, onSubmit }) => {
         nombre: "",
         descripcion: "",
         tipo_calculo: "por_hora",
-        tipo_vehiculo: "todos",
+        tipo_vehiculo: "moto",
         parqueadero_id: "",
         dia_semana: "Todos",
         hora_inicio: "",
@@ -120,7 +120,7 @@ const TarifaModal = ({ isOpen, onClose, tarifa, onSubmit }) => {
       nombre: "",
       descripcion: "",
       tipo_calculo: "por_hora",
-      tipo_vehiculo: "todos",
+      tipo_vehiculo: "moto",
       parqueadero_id: "",
       dia_semana: "Todos",
       hora_inicio: "",
@@ -186,8 +186,6 @@ const TarifaModal = ({ isOpen, onClose, tarifa, onSubmit }) => {
             >
               <option value="por_hora">Por Hora</option>
               <option value="por_dia">Por Día</option>
-              <option value="por_minuto">Por Minuto</option>
-              <option value="fijo">Fijo</option>
             </select>
           </div>
 
@@ -199,9 +197,8 @@ const TarifaModal = ({ isOpen, onClose, tarifa, onSubmit }) => {
               value={formData.tipo_vehiculo}
               onChange={handleChange}
             >
-              <option value="todos">Todos</option>
-              <option value="automovil">Automóvil</option>
               <option value="moto">Moto</option>
+              <option value="automovil">Automóvil</option>
               <option value="camion">Camión</option>
             </select>
           </div>

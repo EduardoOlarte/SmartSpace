@@ -6,6 +6,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
         placa: "",
         tipo_vehiculo: "automovil",
         parqueadero_id: "",
+        tipo_cobro: "por_hora",
         controlador_id: currentUserId?.toString() || "1",
         espacio_asignado: ""
     });
@@ -45,6 +46,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                 placa: entrada.placa || "",
                 tipo_vehiculo: entrada.tipo_vehiculo || "automovil",
                 parqueadero_id: entrada.parqueadero_id?.toString() || parqueaderos[0].id.toString(),
+                tipo_cobro: entrada.tipo_cobro || "por_hora",
                 controlador_id: entrada.controlador_id?.toString() || currentUserId?.toString() || "1",
                 espacio_asignado: entrada.espacio_asignado || ""
             });
@@ -54,6 +56,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                 placa: "",
                 tipo_vehiculo: "automovil",
                 parqueadero_id: parqueaderos[0].id.toString(),
+                tipo_cobro: "por_hora",
                 controlador_id: currentUserId?.toString() || "1",
                 espacio_asignado: ""
             });
@@ -62,6 +65,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                 placa: "",
                 tipo_vehiculo: "automovil",
                 parqueadero_id: "",
+                tipo_cobro: "por_hora",
                 controlador_id: currentUserId?.toString() || "1",
                 espacio_asignado: ""
             });
@@ -111,6 +115,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                 tipo_vehiculo: formData.tipo_vehiculo,
                 parqueadero_id: parseInt(formData.parqueadero_id),
                 espacio_asignado: parseInt(formData.espacio_asignado),
+                tipo_cobro: formData.tipo_cobro,
                 controlador_id: parseInt(formData.controlador_id),
             };
 
@@ -123,6 +128,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                         ...prev,
                         placa: "",
                         tipo_vehiculo: "automovil",
+                        tipo_cobro: "por_hora",
                         parqueadero_id: parqueaderos[0]?.id.toString() || "",
                         espacio_asignado: "",
                     }));
@@ -144,6 +150,7 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
         setFormData({
             placa: "",
             tipo_vehiculo: "automovil",
+            tipo_cobro: "por_hora",
             parqueadero_id: parqueaderos[0]?.id.toString() || "",
             controlador_id: currentUserId?.toString() || "1",
             espacio_asignado: ""
@@ -195,9 +202,23 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                             <option value="automovil">Automóvil </option>
                             <option value="moto">Moto </option>
                             <option value="camion">Camión </option>
-                            <option value="otros">Otros</option>
                         </select>
                         {errors.tipo_vehiculo && <span className="error-message">{errors.tipo_vehiculo}</span>}
+                    </div>
+
+                    {/* Tipo de cobro */}
+                    <div className="form-group">
+                        <label>Cobrar por * (Selecciona cómo se cobrará)</label>
+                        <select
+                            name="tipo_cobro"
+                            value={formData.tipo_cobro}
+                            onChange={handleChange}
+                            className={errors.tipo_cobro ? "error" : ""}
+                        >
+                            <option value="por_hora">Por Hora</option>
+                            <option value="por_dia">Por Día</option>
+                        </select>
+                        {errors.tipo_cobro && <span className="error-message">{errors.tipo_cobro}</span>}
                     </div>
 
                     {/* Parqueadero */}

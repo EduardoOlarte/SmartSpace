@@ -107,14 +107,15 @@ export const registrarSalida = async (req, res) => {
       });
     }
 
-    //  Calcular el monto cobrado
+    //  Calcular el monto cobrado usando tipo_cobro almacenado
     let monto_cobrado = 0;
     try {
       const calculoTarifa = await TarifaModel.calcularTarifa({
         tipo_vehiculo: entrada.tipo_vehiculo,
         parqueadero_id: entrada.parqueadero_id,
         hora_ingreso: entrada.hora_ingreso,
-        hora_salida
+        hora_salida,
+        tipo_cobro: entrada.tipo_cobro // 🔹 USAR tipo_cobro de la entrada
       });
       monto_cobrado = calculoTarifa.monto_total;
     } catch (tarifaError) {
@@ -128,6 +129,7 @@ export const registrarSalida = async (req, res) => {
       parqueadero_id: entrada.parqueadero_id,     //  mantener parqueadero
       controlador_id: entrada.controlador_id,     //  mantener controlador
       espacio_asignado: entrada.espacio_asignado, //  mantener espacio
+      tipo_cobro: entrada.tipo_cobro,             //  mantener tipo_cobro
       hora_salida,                                //  nueva hora salida
       estado: "cerrada",                          //  cambiar estado
       monto_cobrado                               //  guardar monto

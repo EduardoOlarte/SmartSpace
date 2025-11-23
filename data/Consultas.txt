@@ -114,22 +114,66 @@ CREATE TABLE entradas (
     id SERIAL PRIMARY KEY,
     placa VARCHAR(20) NOT NULL,
     tipo_vehiculo VARCHAR(50) NOT NULL CHECK (
-        tipo_vehiculo IN ('automovil','moto','camion','otros')
+        tipo_vehiculo IN ('automovil','moto','camion')
     ),
     parqueadero_id INTEGER NOT NULL REFERENCES parqueaderos(id) ON DELETE CASCADE,
     controlador_id INTEGER NOT NULL REFERENCES controladores(id) ON DELETE CASCADE,
     espacio_asignado INTEGER NOT NULL,
+    tipo_cobro VARCHAR(20) NOT NULL DEFAULT 'por_hora' CHECK (
+        tipo_cobro IN ('por_dia','por_hora')
+    ),
     hora_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     hora_salida TIMESTAMP,
-    estado VARCHAR(20) NOT NULL DEFAULT 'activa' CHECK (estado IN ('activa','cerrada'))
+    estado VARCHAR(20) NOT NULL DEFAULT 'activa' CHECK (estado IN ('activa','cerrada')),
+    monto_cobrado DECIMAL(10,2),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ==========================
 -- REGISTROS DE PRUEBA
 -- ==========================
-INSERT INTO entradas (placa, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado)
+INSERT INTO entradas (placa, tipo_vehiculo, parqueadero_id, controlador_id, espacio_asignado, tipo_cobro)
 VALUES
-('ABC123', 'automovil', 1, 1, 12),
-('XYZ789', 'moto', 1, 2, 3),
-('LMN456', 'camion', 1, 1, 1);
+('ABC123', 'automovil', 1, 1, 12, 'por_hora'),
+('XYZ789', 'moto', 1, 2, 3, 'por_hora'),
+('LMN456', 'camion', 1, 1, 1, 'por_dia');
 
+
+-- ==========================
+-- TABLA: tarifas
+-- ==========================
+DROP TABLE IF EXISTS tarifas CASCADE;
+
+CREATE TABLE tarifas (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    tipo_calculo VARCHAR(20) NOT NULL CHECK (tipo_calculo IN ('por_dia', 'por_hora')),
+    tipo_vehiculo VARCHAR(50) NOT NULL CHECK (tipo_vehiculo IN ('moto', 'automovil', 'camion')),
+    parqueadero_id INTEGER REFERENCES parqueaderos(id) ON DELETE CASCADE,
+    dia_semana VARCHAR(15) DEFAULT 'Todos' CHECK (
+        dia_semana IN ('Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo','Todos')
+    ),
+    hora_inicio TIME,
+    hora_fin TIME,
+    precio DECIMAL(10,2) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insertar tarifas de ejemplo
+INSERT INTO tarifas (nombre, descripcion, tipo_calculo, tipo_vehiculo, dia_semana, precio, activo)
+VALUES
+-- Motos
+('Tarifa Moto - Por Hora', 'Cobro por hora para motos', 'por_hora', 'moto', 'Todos', 3000, true),
+('Tarifa Moto - Por Día', 'Cobro por día para motos', 'por_dia', 'moto', 'Todos', 15000, true),
+
+-- Automóviles
+('Tarifa Automóvil - Por Hora', 'Cobro por hora para automóviles', 'por_hora', 'automovil', 'Todos', 5000, true),
+('Tarifa Automóvil - Por Día', 'Cobro por día para automóviles', 'por_dia', 'automovil', 'Todos', 30000, true),
+
+-- Camiones
+('Tarifa Camión - Por Hora', 'Cobro por hora para camiones', 'por_hora', 'camion', 'Todos', 8000, true),
+('Tarifa Camión - Por Día', 'Cobro por día para camiones', 'por_dia', 'camion', 'Todos', 50000, true);

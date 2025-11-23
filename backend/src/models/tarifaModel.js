@@ -60,6 +60,14 @@ export const createTarifa = async ({
     throw new Error("Nombre, tipo de cálculo y precio son obligatorios");
   }
 
+  if (!["por_dia", "por_hora"].includes(tipo_calculo)) {
+    throw new Error("Tipo de cálculo debe ser 'por_dia' o 'por_hora'");
+  }
+
+  if (!["moto", "automovil", "camion"].includes(tipo_vehiculo)) {
+    throw new Error("Tipo de vehículo debe ser 'moto', 'automovil' o 'camion'");
+  }
+
   if (precio < 0) {
     throw new Error("El precio no puede ser negativo");
   }
@@ -168,7 +176,7 @@ export const searchTarifas = async (criterio, valor) => {
 // CALCULAR TARIFA PARA UNA ENTRADA
 // ==========================
 export const calcularTarifa = async (entrada) => {
-  const { tipo_vehiculo, parqueadero_id, hora_ingreso, hora_salida } = entrada;
+  const { tipo_vehiculo, parqueadero_id, hora_ingreso, hora_salida, tipo_cobro } = entrada;
 
   if (!hora_salida) {
     throw new Error("No se puede calcular tarifa sin hora de salida");
@@ -179,7 +187,6 @@ export const calcularTarifa = async (entrada) => {
   const diferenciaMs = salida - ingreso;
   
   // Calcular tiempo en diferentes unidades
-  const minutos = Math.ceil(diferenciaMs / (1000 * 60));
   const horas = Math.ceil(diferenciaMs / (1000 * 60 * 60));
   const dias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
   
@@ -188,27 +195,30 @@ export const calcularTarifa = async (entrada) => {
   const diaSemana = diasSemana[ingreso.getDay()];
   const horaIngreso = ingreso.toTimeString().slice(0, 5); // HH:MM
 
+  // Usar tipo_cobro si se proporciona, si no usar el tipo_calculo de tarifa
+  let tipoCobro = tipo_cobro || 'por_hora'; // default
+
   // Buscar tarifa más específica primero (prioridad)
   const { rows } = await pool.query(`
     SELECT * FROM tarifas
     WHERE activo = true
-      AND (tipo_vehiculo = $1 OR tipo_vehiculo = 'todos')
+      AND tipo_vehiculo = $1
       AND (parqueadero_id = $2 OR parqueadero_id IS NULL)
       AND (dia_semana = $3 OR dia_semana = 'Todos')
       AND (
         (hora_inicio IS NULL AND hora_fin IS NULL) OR
         (CAST($4 AS TIME) >= hora_inicio AND CAST($4 AS TIME) < hora_fin)
       )
+      AND tipo_calculo = $5
     ORDER BY 
       CASE WHEN parqueadero_id IS NOT NULL THEN 1 ELSE 2 END,
       CASE WHEN dia_semana != 'Todos' THEN 1 ELSE 2 END,
-      CASE WHEN hora_inicio IS NOT NULL THEN 1 ELSE 2 END,
-      CASE WHEN tipo_vehiculo != 'todos' THEN 1 ELSE 2 END
+      CASE WHEN hora_inicio IS NOT NULL THEN 1 ELSE 2 END
     LIMIT 1
-  `, [tipo_vehiculo, parqueadero_id, diaSemana, horaIngreso]);
+  `, [tipo_vehiculo, parqueadero_id, diaSemana, horaIngreso, tipoCobro]);
 
   if (rows.length === 0) {
-    throw new Error("No se encontró una tarifa aplicable para este vehículo");
+    throw new Error(`No se encontró una tarifa aplicable para ${tipo_vehiculo} con cobro por ${tipoCobro}`);
   }
 
   const tarifa = rows[0];
@@ -216,17 +226,11 @@ export const calcularTarifa = async (entrada) => {
 
   // Calcular según tipo de tarifa
   switch (tarifa.tipo_calculo) {
-    case 'por_minuto':
-      montoTotal = minutos * tarifa.precio;
-      break;
     case 'por_hora':
       montoTotal = horas * tarifa.precio;
       break;
     case 'por_dia':
       montoTotal = dias * tarifa.precio;
-      break;
-    case 'fijo':
-      montoTotal = tarifa.precio;
       break;
     default:
       throw new Error("Tipo de cálculo de tarifa no válido");
@@ -234,9 +238,9 @@ export const calcularTarifa = async (entrada) => {
 
   return {
     tarifa_aplicada: tarifa,
-    tiempo_minutos: minutos,
     tiempo_horas: horas,
     tiempo_dias: dias,
+    tipo_cobro: tipoCobro,
     monto_total: parseFloat(montoTotal.toFixed(2))
   };
 };
