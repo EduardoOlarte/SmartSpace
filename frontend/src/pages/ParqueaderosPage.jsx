@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParqueaderos } from "../hooks/useParqueaderos";
+import { entradaService } from "../services/entradaService";
 import ParqueaderoList from "../components/ParqueaderoList";
 import ParqueaderoModal from "../components/ParqueaderoModal";
+import SpaceAlertModal from "../components/SpaceAlertModal";
 
 export default function ParqueaderosPage() {
   const {
@@ -21,12 +23,110 @@ export default function ParqueaderosPage() {
   const [searchCriteria, setSearchCriteria] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [alert, setAlert] = useState({ show: false, type: "", message: "" });
+  const [spaceAlert, setSpaceAlert] = useState({ show: false, parqueadero: null, espacios: 0 });
+  const [alertasYaMostradas, setAlertasYaMostradas] = useState(new Set());
+  const [entradas, setEntradas] = useState([]);
 
   const stats = getStats();
 
   useEffect(() => {
     loadParqueaderos();
+    cargarEntradas();
   }, []);
+
+  // Cargar todas las entradas
+  const cargarEntradas = async () => {
+    try {
+      const result = await entradaService.getEntradas();
+      console.log("📥 Entradas cargadas:", result);
+      
+      // El servicio devuelve {success: true, data: []}
+      if (result.success && Array.isArray(result.data)) {
+        setEntradas(result.data);
+      } else {
+        console.warn("Formato inesperado de entradas:", result);
+        setEntradas([]);
+      }
+    } catch (err) {
+      console.error("❌ Error cargando entradas:", err);
+      setEntradas([]);
+    }
+  };
+
+  // Verificar espacios disponibles cada 2 segundos
+  useEffect(() => {
+    const verificarEspacios = async () => {
+      try {
+        await cargarEntradas();
+      } catch (err) {
+        console.error("Error verificando espacios:", err);
+      }
+    };
+
+    verificarEspacios(); // Verificar inmediatamente
+    const interval = setInterval(verificarEspacios, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Procesar alertas cuando cambien las entradas
+  useEffect(() => {
+    if (parqueaderos.length === 0) {
+      console.log("❌ No hay parqueaderos");
+      return;
+    }
+
+    console.log(`\n🔄 VERIFICANDO ALERTAS...`);
+    console.log(`Total parqueaderos: ${parqueaderos.length}`);
+    console.log(`Total entradas en BD: ${entradas.length}`);
+
+    parqueaderos.forEach((parqueadero) => {
+      // Filtrar entradas activas del parqueadero actual
+      const entradasActivas = entradas.filter((e) => {
+        const esDelParqueadero = parseInt(e.parqueadero_id) === parseInt(parqueadero.id);
+        const esActiva = e.estado === "activa";
+        console.log(
+          `  Entrada ${e.id} (${e.placa}): parq=${e.parqueadero_id}(match=${esDelParqueadero}), estado=${e.estado}(match=${esActiva})`
+        );
+        return esDelParqueadero && esActiva;
+      });
+
+      const espaciosDisponibles = parqueadero.capacidad - entradasActivas.length;
+
+      console.log(
+        `\n📊 ${parqueadero.nombre} (ID: ${parqueadero.id})`
+      );
+      console.log(`   Capacidad: ${parqueadero.capacidad}`);
+      console.log(`   Ocupados: ${entradasActivas.length}`);
+      console.log(`   Disponibles: ${espaciosDisponibles}`);
+      console.log(`   Alerta mostrada: ${alertasYaMostradas.has(parqueadero.id)}`);
+
+      // Si quedan 5 o menos espacios
+      if (espaciosDisponibles <= 5) {
+        if (!alertasYaMostradas.has(parqueadero.id)) {
+          console.log(`🔴 ¡¡¡MOSTRAR ALERTA!!! Solo ${espaciosDisponibles} espacios disponibles`);
+          setSpaceAlert({
+            show: true,
+            parqueadero,
+            espacios: espaciosDisponibles,
+          });
+          setAlertasYaMostradas((prev) => new Set([...prev, parqueadero.id]));
+        } else {
+          console.log(`⚠️ Alerta ya mostrada para este parqueadero`);
+        }
+      } else {
+        console.log(`✅ Espacios OK (${espaciosDisponibles})`);
+        // Limpiar alerta si hay más espacios disponibles
+        if (alertasYaMostradas.has(parqueadero.id)) {
+          console.log(`🟢 Limpiando alerta anterior`);
+          setAlertasYaMostradas((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(parqueadero.id);
+            return newSet;
+          });
+        }
+      }
+    });
+  }, [parqueaderos, entradas]);
 
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
@@ -61,6 +161,7 @@ const handleFormSubmit = async (formData) => {
 
     handleCloseModal();
     await loadParqueaderos();
+    await cargarEntradas(); // Recargar entradas para actualizar alertas
   } catch (err) {
     const msg = err.response?.data?.message || err.message;
     showAlert("error", msg);
@@ -204,6 +305,15 @@ const handleSearch = async () => {
         parqueadero={editingParqueadero}
         onSubmit={handleFormSubmit}
       />
+
+      {/* Space Alert Modal */}
+      {spaceAlert.show && (
+        <SpaceAlertModal
+          parqueadero={spaceAlert.parqueadero}
+          espaciosDisponibles={spaceAlert.espacios}
+          onClose={() => setSpaceAlert({ show: false, parqueadero: null, espacios: 0 })}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import parqueaderoService from "../services/parqueaderoService";
 
 const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {}, currentUserId }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         placa: "",
         tipo_vehiculo: "automovil",
@@ -132,7 +134,6 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
                         parqueadero_id: parqueaderos[0]?.id.toString() || "",
                         espacio_asignado: "",
                     }));
-                    irAEntradas();
                 }
 
             } else {
@@ -143,7 +144,6 @@ const EntradaModal = ({ isOpen, onClose, entrada, onSubmit, espaciosLibres = {},
         } finally {
             setIsSubmitting(false);
         }
-        irAEntradas();
     };
 
     const handleClose = () => {

@@ -100,7 +100,7 @@ export default function EntradaList({ entradas = [], onSalida }) {
             <th style={thStyle}>Espacio</th>
             <th style={thStyle}>Entrada</th>
             <th style={thStyle}>Salida</th>
-            <th style={thStyle}>Monto</th> {/* 🔹 NUEVO */}
+            <th style={thStyle}>Monto</th>
             <th style={thStyle}>Activo</th>
             <th style={thStyle}>Acciones</th>
           </tr>

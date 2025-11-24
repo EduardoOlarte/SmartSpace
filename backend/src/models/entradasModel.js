@@ -10,7 +10,7 @@ export const getAllEntradas = async () => {
     `SELECT e.*, p.nombre AS parqueadero, c.nombre AS controlador
      FROM entradas e
      JOIN parqueaderos p ON e.parqueadero_id = p.id
-     JOIN controladores c ON e.controlador_id = c.id
+     LEFT JOIN controladores c ON e.controlador_id = c.id
      ORDER BY e.hora_ingreso DESC`
   );
   return rows;
@@ -22,7 +22,7 @@ export const getEntradaById = async (id) => {
     `SELECT e.*, p.nombre AS parqueadero, c.nombre AS controlador
      FROM entradas e
      JOIN parqueaderos p ON e.parqueadero_id = p.id
-     JOIN controladores c ON e.controlador_id = c.id
+     LEFT JOIN controladores c ON e.controlador_id = c.id
      WHERE e.id=$1`,
     [id]
   );
