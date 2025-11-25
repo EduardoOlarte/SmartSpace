@@ -40,3 +40,50 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Tabs Navigation */
+.tabs-navigation {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 20px;
+  gap: 0;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  padding: 8px;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  margin-right: 5px;
+}
+
+.tab-button:hover {
+  color: #333;
+  background: rgba(0, 123, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.tab-button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  border-bottom-color: transparent;
+}
+
+.tab-button i {
+  font-size: 16px;
+}
+
+

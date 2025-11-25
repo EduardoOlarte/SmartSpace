@@ -9,6 +9,7 @@ import horarioRoutes from "./routes/horarioRoutes.js";
 import entradasRoutes from "./routes/entradasRoutes.js";
 import tarifasRoutes from "./routes/tarifaRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js";
+import reportesRoutes from "./routes/reportesRoutes.js";
 
 const app = express();
 
@@ -23,7 +24,8 @@ app.use("/api/parqueaderos", parqueaderoRoutes);
 app.use("/api/horarios", horarioRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/entradas", entradasRoutes);
-app.use("/api/tarifas", tarifasRoutes); 
+app.use("/api/tarifas", tarifasRoutes);
+app.use("/api/reportes", reportesRoutes); 
 
 // ✅ Ruta raíz para Render
 app.get("/", (req, res) => {

@@ -4,6 +4,8 @@ import { entradaService } from "../services/entradaService";
 import ParqueaderoList from "../components/ParqueaderoList";
 import ParqueaderoModal from "../components/ParqueaderoModal";
 import SpaceAlertModal from "../components/SpaceAlertModal";
+import ReportesTab from "../components/ReportesTab";
+import "../styles/tabs.css";
 
 export default function ParqueaderosPage() {
   const {
@@ -26,6 +28,7 @@ export default function ParqueaderosPage() {
   const [spaceAlert, setSpaceAlert] = useState({ show: false, parqueadero: null, espacios: 0 });
   const [alertasYaMostradas, setAlertasYaMostradas] = useState(new Set());
   const [entradas, setEntradas] = useState([]);
+  const [activeTab, setActiveTab] = useState("parqueaderos");
 
   const stats = getStats();
 
@@ -287,14 +290,35 @@ const handleSearch = async () => {
 
       {/* Parqueaderos list */}
       <section className="card">
-        {!loading && parqueaderos.length === 0 ? (
-          <p>No hay parqueaderos aún.</p>
+        {/* Tabs Navigation */}
+        <div className="tabs-navigation">
+          <button
+            className={`tab-button ${activeTab === "parqueaderos" ? "active" : ""}`}
+            onClick={() => setActiveTab("parqueaderos")}
+          >
+            <i className="fas fa-list"></i> Parqueaderos
+          </button>
+          <button
+            className={`tab-button ${activeTab === "reportes" ? "active" : ""}`}
+            onClick={() => setActiveTab("reportes")}
+          >
+            <i className="fas fa-chart-bar"></i> Reportes
+          </button>
+        </div>
+
+        {/* Tabs Content */}
+        {activeTab === "parqueaderos" ? (
+          !loading && parqueaderos.length === 0 ? (
+            <p>No hay parqueaderos aún.</p>
+          ) : (
+            <ParqueaderoList
+              parqueaderos={parqueaderos}
+              onEdit={handleEditParqueadero}
+              onDelete={handleDeleteParqueadero}
+            />
+          )
         ) : (
-          <ParqueaderoList
-            parqueaderos={parqueaderos}
-            onEdit={handleEditParqueadero}
-            onDelete={handleDeleteParqueadero}
-          />
+          <ReportesTab />
         )}
       </section>
 

@@ -1,0 +1,152 @@
+.reportes-container {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.reportes-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.resumen-general {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.card-resumen {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #007bff;
+}
+
+.card-resumen h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.monto-grande {
+  font-size: 28px;
+  font-weight: 700;
+  color: #007bff;
+  margin: 0;
+}
+
+.numero-grande {
+  font-size: 28px;
+  font-weight: 700;
+  color: #28a745;
+  margin: 0;
+}
+
+.tabla-reportes {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-reportes h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.tabla-reportes table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-reportes thead {
+  background: #f0f0f0;
+}
+
+.tabla-reportes th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tabla-reportes td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.tabla-reportes tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.tabla-reportes tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.nombre-parq {
+  font-weight: 600;
+  color: #333;
+}
+
+.numero {
+  text-align: center;
+  color: #666;
+}
+
+.monto {
+  text-align: right;
+  font-weight: 600;
+  color: #28a745;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-activa {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-completada {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resumen-general {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-reportes {
+    overflow-x: auto;
+  }
+
+  .tabla-reportes table {
+    min-width: 600px;
+  }
+
+  .monto-grande,
+  .numero-grande {
+    font-size: 22px;
+  }
+}
