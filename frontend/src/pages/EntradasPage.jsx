@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useEntradas } from "../hooks/useEntradas";
+import { useParqueaderos } from "../hooks/useParqueaderos";
 import EntradaList from "../components/EntradaList";
 import EntradaModal from "../components/EntradaModal";
+import SpaceAlertModal from "../components/SpaceAlertModal";
 import { NavLink } from "react-router-dom";
 
 export default function EntradasPage() {
@@ -17,14 +19,100 @@ export default function EntradasPage() {
     searchEntradas,
   } = useEntradas();
 
+  const { parqueaderos, loadParqueaderos } = useParqueaderos();
+
   const [showModal, setShowModal] = useState(false);
   const [editingEntrada, setEditingEntrada] = useState(null);
   const [searchCriteria, setSearchCriteria] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [alert, setAlert] = useState({ show: false, type: "", message: "" });
   const [displayEntradas, setDisplayEntradas] = useState([]);
+  const [spaceAlert, setSpaceAlert] = useState({ show: false, parqueadero: null, espacios: 0 });
+  const [alertasYaMostradas, setAlertasYaMostradas] = useState(new Set());
 
   const [searchParams] = useSearchParams();
+
+  // Cargar parqueaderos al montar
+  useEffect(() => {
+    loadParqueaderos();
+  }, []);
+
+  // Cargar entradas al montar y cuando cambien los searchParams
+  useEffect(() => {
+    const refreshEntradas = async () => {
+      const parqueadero = searchParams.get("parqueadero");
+
+      const allEntradas = await loadEntradas();
+
+      if (parqueadero) {
+        setSearchCriteria("parqueadero_id");
+        setSearchValue(parqueadero);
+        const filtered = allEntradas.filter(
+          (e) => e.parqueadero_id.toString() === parqueadero
+        );
+        setDisplayEntradas(filtered);
+      } else {
+        setDisplayEntradas(allEntradas);
+      }
+    };
+
+    refreshEntradas();
+  }, [searchParams]);
+
+  // Procesar alertas SOLO UNA VEZ cuando cambien las entradas (sin actualizaciones constantes)
+  useEffect(() => {
+    if (parqueaderos.length === 0 || entradas.length === 0) {
+      return;
+    }
+
+    // Array de parqueaderos que cumplen la condición de alerta (≤5 espacios)
+    const parqueaderosConAlerta = [];
+
+    parqueaderos.forEach((parqueadero) => {
+      // Filtrar entradas activas del parqueadero actual
+      const entradasActivas = entradas.filter((e) => {
+        const esDelParqueadero = parseInt(e.parqueadero_id) === parseInt(parqueadero.id);
+        const esActiva = e.estado === "activa";
+        return esDelParqueadero && esActiva;
+      });
+
+      const espaciosDisponibles = parqueadero.capacidad - entradasActivas.length;
+
+      // Si quedan 5 o menos espacios
+      if (espaciosDisponibles <= 5) {
+        parqueaderosConAlerta.push({
+          parqueadero,
+          espacios: espaciosDisponibles
+        });
+      } else {
+        // Limpiar alerta si hay más espacios disponibles
+        if (alertasYaMostradas.has(parqueadero.id)) {
+          setAlertasYaMostradas((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(parqueadero.id);
+            return newSet;
+          });
+        }
+      }
+    });
+
+    // Mostrar la siguiente alerta pendiente
+    if (parqueaderosConAlerta.length > 0) {
+      // Buscar el primero que NO esté en alertasYaMostradas
+      const proximaAlerta = parqueaderosConAlerta.find(
+        (item) => !alertasYaMostradas.has(item.parqueadero.id)
+      );
+
+      if (proximaAlerta && !spaceAlert.show) {
+        setSpaceAlert({
+          show: true,
+          parqueadero: proximaAlerta.parqueadero,
+          espacios: proximaAlerta.espacios,
+        });
+        setAlertasYaMostradas((prev) => new Set([...prev, proximaAlerta.parqueadero.id]));
+      }
+    }
+  }, [parqueaderos, entradas, spaceAlert.show]);
 
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
@@ -274,6 +362,15 @@ const handleSearch = async (value = searchValue) => {
         entrada={editingEntrada}
         onSubmit={handleFormSubmit}
       />
+
+      {/* Alert Modal */}
+      {spaceAlert.show && (
+        <SpaceAlertModal
+          parqueadero={spaceAlert.parqueadero}
+          espaciosDisponibles={spaceAlert.espacios}
+          onClose={() => setSpaceAlert({ show: false, parqueadero: null, espacios: 0 })}
+        />
+      )}
     </div>
   );
 }
